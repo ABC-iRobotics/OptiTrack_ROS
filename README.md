@@ -40,45 +40,59 @@ nc -vz [your IP] 3883
 colcon build --packages-select vrpn_listener
 source install/setup.bash
 ros2 launch vrpn_listener sync_entity_state.launch
+```
 
 **Terminal 2 - Start Virtual Simulation:**
+```bash
 cd ~/g1_ws
 colcon build
 source install/setup.bash
 ros2 launch g1_arm demo.launch.py
+```
 
 **Terminal 3 - Control Node:**
+```bash
 cd ~/g1_ws
 source install/setup.bash
 ros2 launch g1_teleop direct_teleop
+```
 
 ### Approach 2: MoveIt Servo Control (Second Solution)
 **Terminal 1 - Start VRPN:**
+```bash
 nc -vz [your IP] 3883
 colcon build --packages-select vrpn_listener
 source install/setup.bash
 ros2 launch vrpn_listener sync_entity_state.launch
-
+```
 **Terminal 2 - Start Virtual Simulation:**
+```bash
 cd ~/g1_ws
 colcon build
 source install/setup.bash
 ros2 launch g1_arm demo.launch.py
+```
 
 **Terminal 3 - Fake Body Publisher:**
+```bash
 cd ~/g1_ws
 source install/setup.bash
 ros2 run g1_teleop fake_body
+```
 
 **Terminal 4 - Start MoveIt Servo:**
+```bash
 cd ~/g1_ws
 source install/setup.bash
 ros2 launch g1_teleop g1_servo.launch.py
+```
 
 **Terminal 5 - Servo Teleoperation Node:**
+```bash
 cd ~/g1_ws
 source install/setup.bash
 ros2 run g1_teleop servo_teleop
+```
 
 ###Optional Debugging Terminals:
 **Terminal 6: Joint status tracking
