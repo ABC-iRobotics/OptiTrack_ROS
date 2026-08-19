@@ -94,7 +94,7 @@ source install/setup.bash
 ros2 run g1_teleop servo_teleop
 ```
 
-###Optional Debugging Terminals:
+### Optional Debugging Terminals:
 **Terminal 6: Joint status tracking
 **Terminal 7: Servo status tracking 
 **Terminal 8: Joint trajectory status tracking  
