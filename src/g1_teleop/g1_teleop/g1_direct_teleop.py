@@ -5,7 +5,6 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import math
 
 def euler_from_quaternion(x, y, z, w):
-    # (Ugyanaz az átalakító, mint eddig)
     t0 = +2.0 * (w * x + y * z)
     t1 = +1.0 - 2.0 * (x * x + y * y)
     roll_x = math.atan2(t0, t1)
@@ -25,21 +24,20 @@ class G1DirectTeleop(Node):
     def __init__(self):
         super().__init__('g1_direct_teleop')
         
-        # Létrehozunk egy Publisher-t a robot vezérlőjéhez!
+        # CREATING A PUBLISHER
         self.publisher_ = self.create_publisher(
             JointTrajectory, 
             '/right_control/joint_trajectory', 
             10)
             
-        # Feliratkozunk a Motive adataira
+        # SUBSCRIBING TO MOTIVE DATA
         self.subscription = self.create_subscription(
             PoseStamped,
             '/vrpn/Szog/pose', 
             self.pose_callback,
             10)
             
-        # Nagyon fontos: Itt meg kell adni a vezérelni kívánt jointok PONTOS nevét!
-        # (Ezeket a robot dokumentációjából vagy RVizből lehet kinézni)
+        # JOINT NAMES FROM RVIZ
         self.joint_names = [
             'right_shoulder_pitch_joint', 
             'right_shoulder_roll_joint', 
@@ -58,7 +56,7 @@ class G1DirectTeleop(Node):
         q = msg.pose.orientation
         roll, pitch, yaw = euler_from_quaternion(q.x, q.y, q.z, q.w)
         
-        # Összerakjuk az üzenetet a motorvezérlőnek
+        # MESSAGE TO JOINT CONTROLLER
         traj_msg = JointTrajectory()
 
         traj_msg.header.stamp = self.get_clock().now().to_msg()
@@ -67,26 +65,24 @@ class G1DirectTeleop(Node):
         
         point = JointTrajectoryPoint()
         
-        # ITT LESZ A TESZT: Melyik szög hová kerül? 
-        # Most csak a váll 3 motorjának adjuk oda a 3 szöget, a többi marad 0 (egyenes)
+        # SETTING ALL JOINT TO 0 DEGREE
         point.positions = [
-            pitch,  # váll pitch
-            roll,   # váll roll
-            yaw,    # váll yaw
-            0.0,    # könyök
-            0.0,    # csukló 1
-            0.0,    # csukló 2
-            0.0     # csukló 3
+            pitch,  # SHOULDER PITCH
+            roll,   # SHOULDER ROLL
+            yaw,    # SHOULDER YAW
+            0.0,    # ELBOW
+            0.0,    # WRIST 1
+            0.0,    # WRIST 2
+            0.0     # WRIST 3
         ]
         
-        # A vezérlő tudni akarja, mennyi idő alatt érjen oda. 
-        # Mivel másodpercenként 120-szor jön adat, adunk neki egy pici időt (pl 0.1 mp)
+        # PROCESSING TIME
         point.time_from_start.sec = 0
         point.time_from_start.nanosec = 100000000 
         
         traj_msg.points.append(point)
         
-        # Parancs kiküldése azonnal!
+        # SENDING COMMAND
         self.publisher_.publish(traj_msg)
 
 def main(args=None):
